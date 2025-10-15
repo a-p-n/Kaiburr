@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -23,9 +22,8 @@ public class TaskController {
     @GetMapping
     public ResponseEntity<?> getTasks(@RequestParam(required = false) String id) {
         if (id != null) {
-            Optional<Task> taskOptional = taskRepository.findById(id);
-            return taskOptional.<ResponseEntity<?>>map(ResponseEntity::ok)
-                    .orElseGet(() -> ResponseEntity.notFound().build());
+            Optional<Task> task = taskRepository.findById(id);
+            return task.map(t -> ResponseEntity.ok(List.of(t))).orElse(ResponseEntity.notFound().build());
         } else {
             List<Task> tasks = taskRepository.findAll();
             return ResponseEntity.ok(tasks);
@@ -48,7 +46,7 @@ public class TaskController {
             return ResponseEntity.notFound().build();
         }
         taskRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/findByName/{name}")
@@ -68,7 +66,7 @@ public class TaskController {
         }
 
         Task task = taskOptional.get();
-        
+
         TaskExecution execution = new TaskExecution();
         execution.setStartTime(new Date());
         execution.setEndTime(new Date());
@@ -85,9 +83,13 @@ public class TaskController {
     }
 
     private boolean isUnsafe(String command) {
-        String[] maliciousCommands = {"rm", "sudo", ";", "&&", "||", "`", "$("};
+        if (command == null || command.trim().isEmpty()) {
+            return true;
+        }
+        String[] maliciousCommands = { "rm", "sudo", ";", "&&", "||", "`", "$(" };
+        String lowerCaseCommand = command.toLowerCase();
         for (String malicious : maliciousCommands) {
-            if (command.contains(malicious)) {
+            if (lowerCaseCommand.contains(malicious)) {
                 return true;
             }
         }
