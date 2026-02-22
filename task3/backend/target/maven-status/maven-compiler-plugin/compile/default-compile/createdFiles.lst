@@ -1,0 +1,5 @@
+com/kaiburr/task3/model/Task.class
+com/kaiburr/task3/controller/TaskController.class
+com/kaiburr/task3/model/TaskExecution.class
+com/kaiburr/task3/Task3Application.class
+com/kaiburr/task3/repository/TaskRepository.class
