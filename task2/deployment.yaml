@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kaiburr-task-app-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kaiburr-task-app
+  template:
+    metadata:
+      labels:
+        app: kaiburr-task-app
+    spec:
+      serviceAccountName: task-app-sa
+      containers:
+      - name: kaiburr-task-app
+        image: apnpro/kaiburr-task-app:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        env:
+        - name: MONGO_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key: mongodb-root-password
+        - name: SPRING_DATA_MONGODB_URI
+          value: "mongodb://root:$(MONGO_PASSWORD)@my-mongo-mongodb:27017/kaiburr_tasks?authSource=admin"

@@ -1,0 +1,5 @@
+com/kaiburr/task2/model/Task.class
+com/kaiburr/task2/controller/TaskController.class
+com/kaiburr/task2/Task2Application.class
+com/kaiburr/task2/model/TaskExecution.class
+com/kaiburr/task2/repository/TaskRepository.class
